@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Shopping List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Shopping List</h1>
+        <form id="js-shopping-list-form">
+            <label for="shopping-list-entry">Add an item</label>
+            <input type="text" name="shopping-list-entry" class="js-shopping-list-entry" placeholder="e.g., broccoli">
+            <button type="submit">Add item</button>
+            <label>Display Checked Item
+                <input type="checkbox" name="shopping-list-checkbox" class="js-shopping-list-checked" checked="checked">
+            </label>            
+            <!-- <label>Search Item in the List
+                <input type="text" name="shopping-list-search" class="shopping-list-search  js-shopping-list-search" placeholder="e.g., broccoli">
+                <button type="submit">Search item</button>
+            </label> 
+            //multiple submit in same form handled by handleNewItemSubmit(),check later
+        -->
+        </form>
+        <ul class="shopping-list js-shopping-list">
+        </ul> 
+        <label>Search Item in the List
+            <input type="text" name="shopping-list-search" class="shopping-list-search  js-shopping-list-search" placeholder="e.g., broccoli">
+            <button type="submit">Search item</button>
+        </label> 
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+    <script type="text/javascript" src="index.js"></script>
+</body>
+</html>
