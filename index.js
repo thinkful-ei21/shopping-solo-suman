@@ -7,6 +7,7 @@ const STORE = {
     {name: 'bread', checked: false, edit : false}
   ],
   displayUnchecked : false, 
+  searchItem :'',
 };
 
 
@@ -37,15 +38,18 @@ function generateShoppingItemsString(shoppingList) {
 function renderShoppingList() {   
   let filterItems = [...STORE.items];
   if(STORE.displayUnchecked == true){    
-    filterItems = filterItems.filter(item => item.checked == false);
-    //console.log(filterItems);
+    filterItems = filterItems.filter(item => item.checked == false);    
   }  
+  if(STORE.searchItem !== ''){
+    console.log(STORE.searchItem);
+    filterItems = filterItems.filter(item => item.name == STORE.searchItem);
+    console.log(filterItems);
+  }
   const shoppingListItemsString = generateShoppingItemsString(filterItems); 
   $('.js-shopping-list').html(shoppingListItemsString);
 }
 
-function addItemToShoppingList(itemName) {
-  //console.log(`Adding "${itemName}" to shopping list`);
+function addItemToShoppingList(itemName) {  
   STORE.items.push({name: itemName, checked: false});
 }
 
@@ -93,13 +97,31 @@ function handleDeleteItemClicked() {
 }
 
 function checkedItemDisplay(){    
-  //console.log("got here");
-  //STORE.displayUnchecked = STORE.displayUnchecked == false ? true : false; 
   $('.js-shopping-list-checked').on('change', function(event){
     STORE.displayUnchecked = STORE.displayUnchecked == false ? true : false;
     renderShoppingList();
   });
 }
+
+function filterSearchTerm(){
+  $('.js-search-button').on('click', event=> {    
+    event.preventDefault();
+    const itemName = $('.js-shopping-list-search').val();    
+    STORE.searchItem = itemName;
+    //console.log(STORE.searchItem);
+    renderShoppingList();
+    $('.js-shopping-list-search').val('');
+  });
+}
+
+// function filterAndDisplay(itemName){  
+//   const filteredItems = STORE.items.filter(item => {    
+//     if(item.name === itemName)
+//       return item;
+//   });
+//   console.log(filteredItems);
+//   return filteredItems;
+// }
 
 
 function handleShoppingList() {
@@ -108,6 +130,7 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   checkedItemDisplay();
+  filterSearchTerm();
 }
 
 $(handleShoppingList);
