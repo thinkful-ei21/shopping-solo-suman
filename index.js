@@ -4,17 +4,30 @@ const STORE = {
     {name: 'apples', checked: false, edit : false},
     {name: 'oranges', checked: false, edit : false},
     {name: 'milk', checked: true, edit : false},
-    {name: 'bread', checked: false, edit : false}
+    {name: 'bread', checked: false, edit : false},
   ],
   displayUnchecked : false, 
   searchItem :'',
 };
 
+function generateSpanElement(item){
+  //if edit is true make it a text box and allow user to edit
+  if(item.edit){
+    return `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">
+      <input type="text" id="js-shopping-item-edit" value="${item.name}">
+    </span>`;
+  }
+  else{
+    //if the edit button is not cicked let it be a span element
+    return `<span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>`;
+  }  
+}
 
+//getting rid of save button ('ENTER' will save the item name on form submit) --- update -- didn't work.. adding save button back
 function generateItemElement(item, itemIndex) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+      ${generateSpanElement(item)}
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -22,7 +35,7 @@ function generateItemElement(item, itemIndex) {
         <button class="shopping-item-delete js-item-delete">
             <span class="button-label">delete</span>
         </button>
-        ${item.edit?'<button class="shopping-item-edit-save js-item-edit-save"><span class="button-label">save</span></button>':
+        ${item.edit?'<button class="shopping-item-save js-item-save"><span class="button-label">save</span></button>':
     '<button class="shopping-item-edit js-item-edit"><span class="button-label">edit</span></button>'}
       </div>
     </li>`;
@@ -40,13 +53,11 @@ function renderShoppingList() {
   if(STORE.displayUnchecked == true){    
     filterItems = filterItems.filter(item => item.checked == false);    
   }  
-  if(STORE.searchItem !== ''){
-    console.log(STORE.searchItem);
-    filterItems = filterItems.filter(item => item.name == STORE.searchItem);
-    console.log(filterItems);
+  if(STORE.searchItem !== ''){    
+    filterItems = filterItems.filter(item => item.name == STORE.searchItem);    
   }
   const shoppingListItemsString = generateShoppingItemsString(filterItems); 
-  $('.js-shopping-list').html(shoppingListItemsString);
+  $('.js-shopping-list').html(shoppingListItemsString);  
 }
 
 function addItemToShoppingList(itemName) {  
@@ -107,21 +118,37 @@ function filterSearchTerm(){
   $('.js-search-button').on('click', event=> {    
     event.preventDefault();
     const itemName = $('.js-shopping-list-search').val();    
-    STORE.searchItem = itemName;
-    //console.log(STORE.searchItem);
+    STORE.searchItem = itemName;    
     renderShoppingList();
     $('.js-shopping-list-search').val('');
   });
 }
 
-// function filterAndDisplay(itemName){  
-//   const filteredItems = STORE.items.filter(item => {    
-//     if(item.name === itemName)
-//       return item;
-//   });
-//   console.log(filteredItems);
-//   return filteredItems;
-// }
+function editAnItem(){  
+  $('.js-shopping-list').on('click','.js-item-edit', event=>{     
+    event.preventDefault();               
+    const itemIndex = getItemIndexFromElement(event.currentTarget);        
+    STORE.items[itemIndex].edit = !STORE.items[itemIndex].edit;
+    // STORE.items = STORE.items.map(item => {
+    //   if(item.index === itemIndex)
+    //     item.edit = true;        
+    // });           
+    renderShoppingList();     
+    updateItem(); //check why the save event doesn't fire if updateItem() is not called from here. 
+  });    
+}
+
+function updateItem(){
+  $('.js-item-save').on('click', event => {      
+    event.preventDefault();            
+    const itemIndex = getItemIndexFromElement(event.currentTarget);
+    STORE.items[itemIndex].name = $('#js-shopping-item-edit').val();    
+    STORE.items[itemIndex].edit = false;
+    STORE.items[itemIndex].checked = false; // assuming that if the user is editing it , he doesn't want it checked.
+    renderShoppingList();    
+    //see why hitting enter doesn't save the updated item name later
+  });
+}
 
 
 function handleShoppingList() {
@@ -131,6 +158,8 @@ function handleShoppingList() {
   handleDeleteItemClicked();
   checkedItemDisplay();
   filterSearchTerm();
+  editAnItem();  
+  updateItem();
 }
 
 $(handleShoppingList);
